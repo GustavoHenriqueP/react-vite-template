@@ -28,6 +28,9 @@ jobs:
   draft-release:
     if: github.repository_owner == 'GustavoHenriqueP'
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -72,5 +75,9 @@ jobs:
             --body "Olá! Esse PR foi criado automaticamente em resposta ao acionamento manual do seguinte workflow: https://github.com/$REPO_NAME/actions/runs/$RUN_ID.
             O changelog e a versão dos arquivos de manifesto foi atualizada nesse commit: $COMMIT_OUTPUT.
 
-            Com a criação desse PR, um workflow de deploy também foi acionado e publicará essa versão em staging.
+            Com a criação desse PR, um workflow de deploy também foi acionado e já publicou essa versão em staging no servidor.
             Por favor, revise as alterações antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
+
+# TODO: Talvez já colocar o dispatch do deploy de staging nesse workflow
+# TODO: Talvez já colocr um script que irá rodar o workflow manual para preparar o release
+# TODO: Talvez mudar nome e referências do arquivo para prepare-deploy
