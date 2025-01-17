@@ -82,3 +82,4 @@ jobs:
 # TODO: Talvez já colocar um script que irá rodar o workflow manual para preparar o release
 # TODO: Talvez mudar nome e referências do arquivo para prepare-deploy
 # TODO: Separar arquivos em prepare-release e prepare-hotfix, sem versão escrito, mas sim com choices major, minor, patch, e opções booleanas para tags de beta, alfa, etc
+# TODO: Verificar se é possível excluir branch release ou hotfix criada caso o PR não seja criado
