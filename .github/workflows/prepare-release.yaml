@@ -69,4 +69,8 @@ jobs:
         run: |
           gh pr create --base main --head $RELEASE_TYPE/$VERSION \
             --title "Publicação: v$VERSION" \
-            --body "Olá! Esse PR foi criado automaticamente em resposta ao acionamento manual do seguinte workflow: https://github.com/$REPO_OWNER/$REPO_NAME/actions/runs/$RUN_ID.\nO changelog e a versão dos arquivos de manifesto foi atualizada nesse commit: $COMMIT_OUTPUT.\n\nCom a criação desse PR, um workflow de deploy também foi acionado e publicará essa versão em staging.\nPor favor, revise as alterações antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
+            --body "Olá! Esse PR foi criado automaticamente em resposta ao acionamento manual do seguinte workflow: https://github.com/$REPO_NAME/actions/runs/$RUN_ID.
+            O changelog e a versão dos arquivos de manifesto foi atualizada nesse commit: $COMMIT_OUTPUT.
+
+            Com a criação desse PR, um workflow de deploy também foi acionado e publicará essa versão em staging.
+            Por favor, revise as alterações antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
