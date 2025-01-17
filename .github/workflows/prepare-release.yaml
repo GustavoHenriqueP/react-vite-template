@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -78,5 +79,6 @@ jobs:
             Por favor, revise as alterações antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
 
 # TODO: Talvez já colocar o dispatch do deploy de staging nesse workflow
-# TODO: Talvez já colocr um script que irá rodar o workflow manual para preparar o release
+# TODO: Talvez já colocar um script que irá rodar o workflow manual para preparar o release
 # TODO: Talvez mudar nome e referências do arquivo para prepare-deploy
+# TODO: Separar arquivos em prepare-release e prepare-hotfix, sem versão escrito, mas sim com choices major, minor, patch, e opções booleanas para tags de beta, alfa, etc
