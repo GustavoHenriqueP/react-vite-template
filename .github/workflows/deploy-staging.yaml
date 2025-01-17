@@ -24,6 +24,7 @@ jobs:
     uses: ./.github/workflows/validate.yaml
 
   deploy:
+    if: github.repository_owner == 'GustavoHenriqueP'
     needs: validate
     runs-on: ubuntu-22.04
     steps:
