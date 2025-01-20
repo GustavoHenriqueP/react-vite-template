@@ -1,25 +1,21 @@
 # Adaptado de: https://github.com/thomaseizinger/github-action-gitflow-release-workflow/blob/dev/.github/workflows/draft-new-release.yml
 
-name: Prepara lançamento de versão
+name: Prepara lançamento de release
 
 on:
   workflow_dispatch:
     inputs:
       release-type:
         type: choice
-        description: 'Tipo de lançamento'
+        description: 'Tipo de release'
         required: true
         options:
-          - release
-          - hotfix
-        default: release
-      version:
-        description: 'Versão a ser lançada'
-        required: true
+          - major
+          - minor
+        default: minor
 
 env:
   RELEASE_TYPE: ${{ github.event.inputs.release-type }}
-  VERSION: ${{ github.event.inputs.version }}
   REPO_OWNER: ${{ github.repository_owner }}
   REPO_NAME: ${{ github.repository }}
   RUN_ID: ${{ github.run_id }}
@@ -40,14 +36,18 @@ jobs:
         with:
           node-version-file: './.nvmrc'
 
+      - name: Bump version in package.json
+        run: |
+          npm version $RELEASE_TYPE --no-git-tag-version --force
+
+          NEW_VERSION=$(npm pkg get version | jq -r)
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Update changelog file and
+        run: node .github/scripts/update-changelog.js $NEW_VERSION $REPO_OWNER $REPO_NAME
+
       - name: Create release branch
-        run: git checkout -b $RELEASE_TYPE/$VERSION
-
-      - name: Update changelog file
-        run: node .github/scripts/update-changelog.js $VERSION $REPO_OWNER $REPO_NAME
-
-      - name: Bump version in package.json (release)
-        run: npm version $VERSION --no-git-tag-version --force
+        run: git checkout -b release/$NEW_VERSION
 
       - name: Initialize mandatory git config
         run: |
@@ -58,20 +58,20 @@ jobs:
         id: make-commit
         run: |
           git add CHANGELOG.md package.json
-          git commit -m "chore: prepare release $VERSION"
+          git commit -m "chore: prepare release $NEW_VERSION"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Push new branch
-        run: git push origin $RELEASE_TYPE/$VERSION
+        run: git push origin release/$NEW_VERSION
 
       - name: Create pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_OUTPUT: ${{ steps.make-commit.outputs.commit }}
         run: |
-          gh pr create --base main --head $RELEASE_TYPE/$VERSION \
-            --title "Publicação: v$VERSION" \
+          gh pr create --base main --head release/$NEW_VERSION \
+            --title "Publicação: v$NEW_VERSION" \
             --body "Olá! Esse PR foi criado automaticamente em resposta ao acionamento manual do seguinte workflow: https://github.com/$REPO_NAME/actions/runs/$RUN_ID.
             O changelog e a versão dos arquivos de manifesto foi atualizada nesse commit: $COMMIT_OUTPUT.
 
