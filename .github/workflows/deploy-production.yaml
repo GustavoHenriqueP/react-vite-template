@@ -84,12 +84,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get the latest tag and notes from CHANGELOG.md
-          TAG=$(grep "^## \[" CHANGELOG.md | sed -n '2p' | sed -n 's/^## \[\([^]]\)\]./v\1/p')
-          NOTES=$(sed -n '1,/^## \[/!{ /^## \[/,/^## \[/ { /^## \[/!p }}' CHANGELOG.md)
+          # Get the second latest tag from CHANGELOG.md
+          TAG=$(awk '/^## \[/ {count++; if (count == 2) {gsub(/[^0-9.]/, "", $2); print "v"$2; exit}}' CHANGELOG.md)
+
+          # Get the release notes for the second latest tag
+          NOTES=$(awk '/^## \[/ {count++; if (count == 2) {found=1; next} else if (count == 3) exit} found' CHANGELOG.md)
 
           # Publish the release
-          gh release create $TAG --title $TAG --notes $NOTES
+          gh release create "$TAG" --title "$TAG" --notes-file <(echo "$NOTES")
 
       - name: Create PR to merge main into dev branch
         if: always()
