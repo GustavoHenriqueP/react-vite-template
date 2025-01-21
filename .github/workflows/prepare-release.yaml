@@ -39,7 +39,7 @@ jobs:
       - name: Bump version in package.json
         run: npm version $RELEASE_TYPE --no-git-tag-version --force
 
-      - name: Set new envs
+      - name: Set new envs and outputs
         run: |
           # New version
           NEW_VERSION=$(npm pkg get version | jq -r)
@@ -47,6 +47,7 @@ jobs:
 
           # New branch
           echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Update changelog file
         run: node .github/scripts/update-changelog.js $NEW_VERSION $REPO_OWNER $REPO_NAME
