@@ -19,6 +19,8 @@ env:
 jobs:
   check-head-branch:
     uses: ./.github/workflows/check-head-branch.yaml
+    with:
+      branch_name: ${{ github.head_ref }}
 
   validate:
     needs: check-head-branch
@@ -31,6 +33,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          branch_name: ${{ github.head_ref }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
