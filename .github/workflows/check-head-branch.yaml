@@ -3,6 +3,9 @@ name: Valida branch head
 on:
   workflow_call:
 
+env:
+  BRANCH_NAME: ${{ github.head_ref }}
+
 jobs:
   check-head-branch:
     runs-on: ubuntu-22.04
