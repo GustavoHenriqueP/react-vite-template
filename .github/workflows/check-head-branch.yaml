@@ -2,6 +2,11 @@ name: Valida branch head
 
 on:
   workflow_call:
+    inputs:
+      head_branch_name:
+        description: 'Nome da branch head'
+        required: false
+        type: string
 
 jobs:
   check-head-branch:
@@ -9,7 +14,7 @@ jobs:
     steps:
       - name: Check head branch
         run: |
-          BRANCH_NAME="${{ github.head_ref }}"
+          BRANCH_NAME="${{ inputs.head_branch_name || github.head_ref }}"
 
           if [[ ! "$BRANCH_NAME" =~ ^(release/|hotfix/) ]]; then
             echo "::error::Pull requests para 'main' só podem vir de branches 'release/**' ou 'hotfix/**'."

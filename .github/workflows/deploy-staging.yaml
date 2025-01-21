@@ -2,6 +2,11 @@ name: Build e deploy para staging
 
 on:
   workflow_call:
+    inputs:
+      head_branch_name:
+        description: 'Nome da branch head'
+        required: false
+        type: string
   pull_request:
     branches:
       - main
@@ -19,6 +24,8 @@ env:
 jobs:
   check-head-branch:
     uses: ./.github/workflows/check-head-branch.yaml
+    with:
+      head_branch_name: ${{ inputs.head_branch_name }}
 
   validate:
     needs: check-head-branch
@@ -31,6 +38,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          branch_name: ${{ github.head_ref }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
