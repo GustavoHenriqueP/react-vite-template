@@ -2,10 +2,10 @@ name: Build e deploy para production
 
 on:
   pull_request:
-   branches:
+    branches:
       - main
     types:
-      - closed
+      - closeds
 
 env:
   VPN_HOST: ${{ secrets.VPN_HOST }}
