@@ -18,10 +18,12 @@ env:
 
 jobs:
   check-head-branch:
+    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/check-head-branch.yaml
 
   validate:
     needs: check-head-branch
+    if: needs.check-head-branch.result == 'skipped' || needs.check-head-branch.result == 'success'
     uses: ./.github/workflows/validate.yaml
 
   deploy:
@@ -31,6 +33,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          branch_name: ${{ github.head_ref }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
