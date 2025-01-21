@@ -1,6 +1,7 @@
 name: Build e deploy para staging
 
 on:
+  workflow_call:
   pull_request:
     branches:
       - main
@@ -17,13 +18,16 @@ env:
 
 jobs:
   check-head-branch:
+    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/check-head-branch.yaml
 
   validate:
     needs: check-head-branch
+    if: always() && (needs.check-head-branch.result == 'skipped' || needs.check-head-branch.result == 'success')
     uses: ./.github/workflows/validate.yaml
 
   deploy:
+    if: github.repository_owner == 'GustavoHenriqueP'
     needs: validate
     runs-on: ubuntu-22.04
     steps:
