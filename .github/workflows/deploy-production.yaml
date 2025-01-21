@@ -63,9 +63,9 @@ jobs:
           pnpm install
           pnpm build
 
-      - name: Confirms VPN connection, if not connected, awaits it
-        timeout-minutes: 1
-        run: until ping -c1 ${FTP_SERVER}; do sleep 1; done
+      # - name: Confirms VPN connection, if not connected, awaits it
+      #   timeout-minutes: 1
+      #   run: until ping -c1 ${FTP_SERVER}; do sleep 1; done
 
       - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
