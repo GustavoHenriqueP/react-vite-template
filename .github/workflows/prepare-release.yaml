@@ -97,4 +97,3 @@ jobs:
   deploy-staging:
     needs: draft-release
     uses: ./.github/workflows/deploy-staging.yaml
-# TODO: Talvez já colocar um script que irá rodar o workflow manual para preparar o release

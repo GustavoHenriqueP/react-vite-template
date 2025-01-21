@@ -1,0 +1,97 @@
+name: Build e deploy para production
+
+on:
+  pull_request:
+   branches:
+      - main
+    types:
+      - closed
+
+env:
+  VPN_HOST: ${{ secrets.VPN_HOST }}
+  VPN_PORT: ${{ secrets.VPN_PORT }}
+  VPN_USERNAME: ${{ secrets.VPN_USERNAME }}
+  VPN_PASSWORD: ${{ secrets.VPN_PASSWORD }}
+  VPN_TRUSTED_CERT: ${{ secrets.VPN_TRUSTED_CERT }}
+  FTP_SERVER: ${{ secrets.FTP_SERVER }}
+  FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+  FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+
+jobs:
+  deploy:
+    if: github.repository_owner == 'GustavoHenriqueP' && github.event.pull_request.merged == true
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 'latest'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: './.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install and configure VPN
+        run: |
+          # Update package list and install VPN
+          sudo apt-get update
+          sudo apt-get install -y openfortivpn=1.17.1-1build1
+
+          # Configure VPN with a configuration file
+          mkdir -p ~/.openfortivpn
+          cat <<EOF > ~/.openfortivpn/config
+          host = ${VPN_HOST}
+          port = ${VPN_PORT}
+          username = ${VPN_USERNAME}
+          password = ${VPN_PASSWORD}
+          trusted-cert = ${VPN_TRUSTED_CERT}
+          EOF
+
+      - name: Connect to VPN
+        run: sudo openfortivpn -c ~/.openfortivpn/config &
+
+      - name: Build project while VPN finishes connecting
+        run: |
+          pnpm install
+          pnpm build
+
+      - name: Confirms VPN connection, if not connected, awaits it
+        timeout-minutes: 1
+        run: until ping -c1 ${FTP_SERVER}; do sleep 1; done
+
+      - name: Deploy to FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          password: ${{ env.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: /appv2/
+
+      - name: Disconnect from VPN
+        if: always()
+        run: sudo pkill openfortivpn || true
+
+      - name: Generate and publish release
+        if: always()
+        run: |
+          # Get the latest tag and notes from CHANGELOG.md
+          TAG=$(grep "^## \[" arquivo.md | sed -n '2p' | sed -n 's/^## \[\([^]]\)\]./v\1/p')
+          NOTES=$(sed -n '1,/^## \[/!{ /^## \[/,/^## \[/ { /^## \[/!p }}' CHANGELOG.md)
+
+          # Publish the release
+          gh release create $TAG --title $TAG --notes $NOTES
+
+      - name: Create PR to merge main into dev branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --base dev --head main \
+            --title "Merge main com dev após novo release" \
+            --body "Esse PR foi criado automaticamente após a publicação de um novo release em produção e tem como objetivo manter as branches 'main' e 'dev' sincronizadas (CHANGELOG.md e arquivos de manifesto)"
