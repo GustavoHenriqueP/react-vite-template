@@ -2,7 +2,7 @@ name: Build e deploy para production
 
 on:
   pull_request:
-   branches:
+    branches:
       - main
     types:
       - closed
@@ -21,6 +21,8 @@ jobs:
   deploy:
     if: github.repository_owner == 'GustavoHenriqueP' && github.event.pull_request.merged == true
     runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -79,9 +81,11 @@ jobs:
 
       - name: Generate and publish release
         if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Get the latest tag and notes from CHANGELOG.md
-          TAG=$(grep "^## \[" arquivo.md | sed -n '2p' | sed -n 's/^## \[\([^]]\)\]./v\1/p')
+          TAG=$(grep "^## \[" CHANGELOG.md | sed -n '2p' | sed -n 's/^## \[\([^]]\)\]./v\1/p')
           NOTES=$(sed -n '1,/^## \[/!{ /^## \[/,/^## \[/ { /^## \[/!p }}' CHANGELOG.md)
 
           # Publish the release
