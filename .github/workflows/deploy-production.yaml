@@ -81,6 +81,8 @@ jobs:
 
       - name: Generate and publish release
         if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Get the latest tag and notes from CHANGELOG.md
           TAG=$(grep "^## \[" CHANGELOG.md | sed -n '2p' | sed -n 's/^## \[\([^]]\)\]./v\1/p')
