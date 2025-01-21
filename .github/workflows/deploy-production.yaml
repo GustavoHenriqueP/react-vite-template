@@ -22,6 +22,7 @@ jobs:
     if: github.repository_owner == 'GustavoHenriqueP' && github.event.pull_request.merged == true
     runs-on: ubuntu-22.04
     permissions:
+      contents: write
       pull-requests: write
     steps:
       - name: Checkout code
