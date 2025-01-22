@@ -1,7 +1,10 @@
 name: Valida PR para main
 
 on:
-  workflow_call:
+  workflow_run:
+    workflows: ['Prepara lançamento de release', 'Prepara lançamento de hotfix']
+    types:
+      - completed
   pull_request:
     branches:
       - main
@@ -14,13 +17,16 @@ on:
       - '!**.{test,spec}.[jt]sx?'
       - '!**.stories.[jt]sx?'
 
+env:
+  BRANCH_REF: ${{ github.event.workflow_run.head_branch || github.event.workflow_run.ref_name || github.head_ref }}
+
 jobs:
   check-head-branch:
     runs-on: ubuntu-22.04
     steps:
       - name: Check head branch
         run: |
-          BRANCH_NAME="${{ github.head_ref }}"
+          BRANCH_NAME="${{ env.BRANCH_REF }}"
           echo "$BRANCH_NAME"
 
           if [[ ! "$BRANCH_NAME" =~ ^(release/|hotfix/) ]]; then
@@ -35,7 +41,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ env.BRANCH_REF }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -61,7 +67,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ env.BRANCH_REF }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -87,7 +93,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ env.BRANCH_REF }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4

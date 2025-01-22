@@ -72,7 +72,3 @@ jobs:
 
             Uma validação de código com verificação de formatação, lint e testes estará sendo realizada.
             Por favor, revise as alterações e o resultado da validação antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
-
-  validate:
-    needs: draft-hotfix
-    uses: ./.github/workflows/validate.yaml

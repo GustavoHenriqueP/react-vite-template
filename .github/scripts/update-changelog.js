@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import path from 'node:path';
 
 const args = process.argv.slice(2);
 
@@ -18,7 +17,6 @@ switch (args.length) {
     console.error(
       'Erro: Parâmetro de nome de repositório não informado\nExemplo de uso: node update-changelog.js <new_version> <repo_owner> <repo_name>',
     );
-    console.log(args);
     process.exit(1);
 }
 

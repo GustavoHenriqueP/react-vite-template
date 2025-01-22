@@ -25,12 +25,7 @@ env:
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
 jobs:
-  check-head-branch:
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/check-head-branch.yaml
-
   validate:
-    needs: check-head-branch
     if: always() && (needs.check-head-branch.result == 'skipped' || needs.check-head-branch.result == 'success')
     uses: ./.github/workflows/validate.yaml
 
