@@ -5,6 +5,8 @@ on:
     inputs:
       branch_ref:
         description: 'Branch para deploy'
+        required: false
+        type: string
   pull_request:
     branches:
       - main
