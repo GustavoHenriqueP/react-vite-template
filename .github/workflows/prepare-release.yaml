@@ -48,6 +48,7 @@ jobs:
 
           # New branch
           echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Update changelog file
         run: node .github/scripts/update-changelog.js $NEW_VERSION $REPO_OWNER $REPO_NAME
@@ -100,4 +101,4 @@ jobs:
     needs: draft-release
     uses: ./.github/workflows/deploy-staging.yaml
     with:
-      branch_ref: ${{ env.NEW_BRANCH }}
+      branch_ref: ${{ needs.draft-release.outputs.NEW_BRANCH }}

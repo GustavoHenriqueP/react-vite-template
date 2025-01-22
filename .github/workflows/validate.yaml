@@ -5,6 +5,8 @@ on:
     inputs:
       branch_ref:
         description: 'Branch para validar'
+        required: false
+        type: string
 
 env:
   BRANCH_REF: ${{ inputs.branch_ref || github.ref }}
