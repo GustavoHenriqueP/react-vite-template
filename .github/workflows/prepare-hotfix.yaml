@@ -34,7 +34,7 @@ jobs:
       - name: Set new version env variable
         run: |
           # New version
-          NEW_VERSION=${BRANCH_NAME#hotfix/}
+          NEW_VERSION=$(echo $BRANCH_NAME | sed -n 's/refs\/head\/hotfix\///p')
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Bump version in package.json
