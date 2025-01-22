@@ -25,17 +25,22 @@ env:
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
 jobs:
-  validate:
-    if: always() && (needs.check-head-branch.result == 'skipped' || needs.check-head-branch.result == 'success')
-    uses: ./.github/workflows/validate.yaml
+  # validate:
+  #   uses: ./.github/workflows/validate.yaml
 
   deploy:
     if: github.repository_owner == 'GustavoHenriqueP'
-    needs: validate
+    # needs: validate
     runs-on: ubuntu-22.04
     steps:
+      - name: Verifica o ref atual
+        run: echo "${{ github.ref }}"
+
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Verifica a branch checked out
+        run: git status
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4

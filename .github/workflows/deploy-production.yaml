@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -63,9 +65,9 @@ jobs:
           pnpm install
           pnpm build
 
-      # - name: Confirms VPN connection, if not connected, awaits it
-      #   timeout-minutes: 1
-      #   run: until ping -c1 ${FTP_SERVER}; do sleep 1; done
+      - name: Confirms VPN connection, if not connected, awaits it
+        timeout-minutes: 1
+        run: until ping -c1 ${FTP_SERVER}; do sleep 1; done
 
       - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -81,7 +83,6 @@ jobs:
         run: sudo pkill openfortivpn || true
 
       - name: Generate and publish release
-        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -95,7 +96,6 @@ jobs:
           gh release create "$TAG" --title "$TAG" --notes-file <(echo "$NOTES") --target main
 
       - name: Create PR to merge main into dev branch
-        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
