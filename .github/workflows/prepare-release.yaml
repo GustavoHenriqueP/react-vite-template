@@ -28,6 +28,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    outputs:
+      new_branch: ${{ steps.set-env-variables.outputs.NEW_BRANCH }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,6 +43,7 @@ jobs:
         run: npm version $RELEASE_TYPE --no-git-tag-version --force
 
       - name: Set new version and new branch variables
+        id: set-env-variables
         run: |
           # New version
           NEW_VERSION=$(npm pkg get version | jq -r)
@@ -48,6 +51,7 @@ jobs:
 
           # New branch
           echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Update changelog file
         run: node .github/scripts/update-changelog.js $NEW_VERSION $REPO_OWNER $REPO_NAME
@@ -95,3 +99,9 @@ jobs:
           else
             echo "Branch $NEW_BRANCH não existe. Nada para excluir."
           fi
+
+  deploy-staging:
+    needs: draft-release
+    uses: ./.github/workflows/deploy-staging.yaml
+    with:
+      branch_ref: ${{ needs.draft-release.outputs.NEW_BRANCH }}
