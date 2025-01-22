@@ -92,7 +92,7 @@ jobs:
           NOTES=$(awk '/^## \[/ {count++; if (count == 2) {found=1; next} else if (count == 3) exit} found' CHANGELOG.md)
 
           # Publish the release
-          gh release create "$TAG" --title "$TAG" --notes-file <(echo "$NOTES")
+          gh release create "$TAG" --title "$TAG" --notes-file <(echo "$NOTES") --target main
 
       - name: Create PR to merge main into dev branch
         if: always()
