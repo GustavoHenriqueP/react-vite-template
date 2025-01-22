@@ -27,7 +27,9 @@ jobs:
       - name: Check head branch
         run: |
           BRANCH_NAME="${{ env.BRANCH_REF }}"
-          echo "$BRANCH_NAME"
+          echo "${{ github.event.workflow_run.head_branch }}"
+          echo "${{ github.event.workflow_run.ref_name }}"
+          echo "${{ github.head_ref }}"
 
           if [[ ! "$BRANCH_NAME" =~ ^(release/|hotfix/) ]]; then
             echo "::error::Pull requests para 'main' só podem vir de branches 'release/**' ou 'hotfix/**'."
