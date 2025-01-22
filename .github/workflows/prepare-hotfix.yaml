@@ -75,5 +75,5 @@ jobs:
             Por favor, revise as alterações e o resultado da validação antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
 
   validate:
-    needs: draft-hotfix
+    needs: draft-release
     uses: ./.github/workflows/validate.yaml

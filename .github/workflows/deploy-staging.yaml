@@ -5,6 +5,14 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - src/**
+      - public/**
+      - .env.*
+      - '*.html'
+      - '!src/testing/**'
+      - '!**.{test,spec}.[jt]sx?'
+      - '!**.stories.[jt]sx?'
 
 env:
   VPN_HOST: ${{ secrets.VPN_HOST }}
