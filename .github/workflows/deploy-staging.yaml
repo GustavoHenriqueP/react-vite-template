@@ -28,27 +28,23 @@ env:
   FTP_SERVER: ${{ secrets.FTP_SERVER }}
   FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-  BRANCH_REF: ${{ inputs.branch_ref || github.ref }}
+  BRANCH_REF: ${{ inputs.branch_ref || github.head_ref }}
 
 jobs:
-  # validate:
-  #   uses: ./.github/workflows/validate.yaml
+  validate:
+    uses: ./.github/workflows/validate.yaml
+    with:
+      branch_ref: ${{ env.BRANCH_REF }}
 
   deploy:
     if: github.repository_owner == 'GustavoHenriqueP'
-    # needs: validate
+    needs: validate
     runs-on: ubuntu-22.04
     steps:
-      - name: Verifica o ref atual
-        run: echo "${{ env.BRANCH_REF }}"
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH_REF }}
-
-      - name: Verifica a branch checked out
-        run: git status
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4

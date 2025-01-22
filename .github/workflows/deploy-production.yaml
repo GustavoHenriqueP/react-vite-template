@@ -98,7 +98,8 @@ jobs:
       - name: Create PR to merge main into dev branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           gh pr create --base dev --head main \
-            --title "Merge main com dev após novo release" \
-            --body "Esse PR foi criado automaticamente após a publicação de um novo release em produção e tem como objetivo manter as branches 'main' e 'dev' sincronizadas (CHANGELOG.md e arquivos de manifesto)"
+            --title "Merge main com dev após $PR_HEAD_REF" \
+            --body "Esse PR foi criado automaticamente após a publicação do $PR_HEAD_REF em produção e tem como objetivo manter as branches 'main' e 'dev' sincronizadas (CHANGELOG.md e arquivos de manifesto)"

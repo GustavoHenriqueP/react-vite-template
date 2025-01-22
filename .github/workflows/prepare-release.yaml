@@ -104,4 +104,4 @@ jobs:
     needs: draft-release
     uses: ./.github/workflows/deploy-staging.yaml
     with:
-      branch_ref: ${{ needs.draft-release.outputs.NEW_BRANCH }}
+      branch_ref: ${{ needs.draft-release.outputs.NEW_BRANCH }} # Passa a branch criada no passo anterior para o workflow de deploy
