@@ -12,6 +12,7 @@ on:
         options:
           - major
           - minor
+          - patch
         default: minor
 
 env:
@@ -39,7 +40,7 @@ jobs:
       - name: Bump version in package.json
         run: npm version $RELEASE_TYPE --no-git-tag-version --force
 
-      - name: Set new envs and outputs
+      - name: Set new version and new branch variables
         run: |
           # New version
           NEW_VERSION=$(npm pkg get version | jq -r)
@@ -47,7 +48,6 @@ jobs:
 
           # New branch
           echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_ENV
-          echo "NEW_BRANCH=release/$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Update changelog file
         run: node .github/scripts/update-changelog.js $NEW_VERSION $REPO_OWNER $REPO_NAME
@@ -64,7 +64,7 @@ jobs:
         id: make-commit
         run: |
           git add CHANGELOG.md package.json
-          git commit -m "chore: prepare release $NEW_VERSION"
+          git commit -m "chore: prepara release $NEW_VERSION"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
@@ -77,12 +77,14 @@ jobs:
           COMMIT_OUTPUT: ${{ steps.make-commit.outputs.commit }}
         run: |
           gh pr create --base main --head $NEW_BRANCH \
-            --title "Publicação: v$NEW_VERSION" \
-            --body "Olá! Esse PR foi criado automaticamente em resposta ao acionamento manual do seguinte workflow: https://github.com/$REPO_NAME/actions/runs/$RUN_ID.
-            O changelog e a versão dos arquivos de manifesto foi atualizada nesse commit: $COMMIT_OUTPUT.
+            --title "Publicação (release): v$NEW_VERSION" \
+            --body "Olá!
 
-            Com a criação desse PR, um workflow de deploy também foi acionado e já publicou essa versão em staging no servidor.
-            Por favor, revise as alterações antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
+            Esse PR foi criado automaticamente em resposta ao acionamento manual do seguinte workflow: https://github.com/$REPO_NAME/actions/runs/$RUN_ID.
+            O changelog e a versão dos arquivos de manifesto foram atualizados nesse commit: $COMMIT_OUTPUT.
+
+            Com a criação desse PR, um workflow de deploy também foi acionado e já publicou essa versão em staging no servidor, além de também realizar a validação do código ao verificar formatação, lint e testes.
+            Por favor, revise as alterações e o resultado da validação antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
 
       - name: Delete new created branch on failure (if PR is not created)
         if: failure()
