@@ -1,10 +1,33 @@
-name: Valida código e testes
+name: Valida PR para main
 
 on:
-  workflow_call:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - src/**
+      - public/**
+      - .env.*
+      - '*.html'
+      - '!src/testing/**'
+      - '!**.{test,spec}.[jt]sx?'
+      - '!**.stories.[jt]sx?'
 
 jobs:
+  check-head-branch:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check head branch
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+
+          if [[ ! "$BRANCH_NAME" =~ ^(release/|hotfix/) ]]; then
+            echo "::error::Pull requests para 'main' só podem vir de branches 'release/**' ou 'hotfix/**'."
+            exit 1  # Cancela o workflow com erro
+          fi
+
   lint:
+    needs: check-head-branch
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
@@ -28,6 +51,7 @@ jobs:
         run: pnpm lint
 
   format-check:
+    needs: check-head-branch
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
@@ -51,6 +75,7 @@ jobs:
         run: pnpm format:check
 
   test:
+    needs: check-head-branch
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
