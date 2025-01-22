@@ -2,6 +2,9 @@ name: Build e deploy para staging
 
 on:
   workflow_call:
+    inputs:
+      branch_ref:
+        description: 'Branch para deploy'
   pull_request:
     branches:
       - main
@@ -23,6 +26,7 @@ env:
   FTP_SERVER: ${{ secrets.FTP_SERVER }}
   FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+  BRANCH_REF: ${{ inputs.branch_ref || github.ref }}
 
 jobs:
   # validate:
@@ -34,10 +38,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Verifica o ref atual
-        run: echo "${{ github.ref }}"
+        run: echo "${{ env.BRANCH_REF }}"
 
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_REF }}
 
       - name: Verifica a branch checked out
         run: git status
