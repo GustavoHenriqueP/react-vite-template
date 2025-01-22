@@ -33,8 +33,7 @@ jobs:
 
       - name: Set new version env variable
         run: |
-          # New version
-          NEW_VERSION=$(echo $BRANCH_NAME | sed -n 's/refs\/head\/hotfix\///p')
+          NEW_VERSION=$(echo $BRANCH_NAME | sed -n 's/refs\/heads\/hotfix\///p')
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Bump version in package.json
@@ -73,7 +72,3 @@ jobs:
 
             Uma validação de código com verificação de formatação, lint e testes estará sendo realizada.
             Por favor, revise as alterações e o resultado da validação antes do merge. Quando o mesmo for realizado, a versão será publicada em produção automaticamente."
-
-  validate:
-    needs: draft-release
-    uses: ./.github/workflows/validate.yaml

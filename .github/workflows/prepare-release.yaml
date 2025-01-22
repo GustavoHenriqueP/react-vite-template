@@ -95,7 +95,3 @@ jobs:
           else
             echo "Branch $NEW_BRANCH não existe. Nada para excluir."
           fi
-
-  validate:
-    needs: draft-release
-    uses: ./.github/workflows/validate.yaml
