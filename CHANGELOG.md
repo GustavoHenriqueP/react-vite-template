@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4] - 2025-01-22
+
 ## [0.0.1] - 2025-01-22
 
 ### Added
@@ -54,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Danish translation (#297).
 
-[unreleased]: https://github.com/GustavoHenriqueP/GustavoHenriqueP/react-vite-template/compare/v0.0.1...HEAD
+[unreleased]: https://github.com/GustavoHenriqueP/GustavoHenriqueP/react-vite-template/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/GustavoHenriqueP/GustavoHenriqueP/react-vite-template/compare/v0.0.1...v0.0.4
 [0.0.1]: https://github.com/GustavoHenriqueP/GustavoHenriqueP/react-vite-template/compare/v1.1.1...v0.0.1
 [1.1.1]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.0.0...v1.1.0
