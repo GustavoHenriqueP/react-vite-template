@@ -1,24 +1,13 @@
 name: Valida PR para main
 
 on:
-  workflow_run:
-    workflows: ['Prepara lançamento de release', 'Prepara lançamento de hotfix']
-    types:
-      - completed
-  pull_request:
-    branches:
-      - main
-    paths:
-      - src/**
-      - public/**
-      - .env.*
-      - '*.html'
-      - '!src/testing/**'
-      - '!**.{test,spec}.[jt]sx?'
-      - '!**.stories.[jt]sx?'
+  workflow_call:
+    inputs:
+      branch_ref:
+        description: 'Branch para validar'
 
 env:
-  BRANCH_REF: ${{ github.event.workflow_run.head_branch || github.event.workflow_run.ref_name || github.head_ref }}
+  BRANCH_REF: ${{ inputs.branch_ref || github.ref }}
 
 jobs:
   check-head-branch:
@@ -27,9 +16,6 @@ jobs:
       - name: Check head branch
         run: |
           BRANCH_NAME="${{ env.BRANCH_REF }}"
-          echo "${{ github.event.workflow_run.head_branch }}"
-          echo "${{ github.event.workflow_run.ref_name }}"
-          echo "${{ github.head_ref }}"
 
           if [[ ! "$BRANCH_NAME" =~ ^(release/|hotfix/) ]]; then
             echo "::error::Pull requests para 'main' só podem vir de branches 'release/**' ou 'hotfix/**'."
